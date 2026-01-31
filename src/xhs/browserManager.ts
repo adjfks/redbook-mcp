@@ -9,7 +9,7 @@ import type { AppConfig } from "../lib/config.js";
 export class BrowserManager {
   private readonly mutex = new Mutex();
 
-  constructor(private readonly config: AppConfig) {}
+  constructor(private readonly config: AppConfig) { }
 
   /**
    * 所有浏览器自动化任务统一串行执行，避免并发导致页面状态互相干扰。
@@ -32,27 +32,36 @@ export class BrowserManager {
   private async newContext(): Promise<{ browser: Browser; ctx: BrowserContext }> {
     await ensureDir(this.config.dataDir);
 
-    const browser = await chromium.launch({
-      headless: this.config.headless,
-      executablePath: this.config.chromePath,
-    });
-
     const storageExists = await fileExists(this.config.storagePath);
-    const ctx = await browser.newContext(
-      storageExists
-        ? {
+
+    try {
+      const browser = await chromium.launch({
+        headless: this.config.headless,
+        executablePath: this.config.chromePath,
+      });
+      const ctx = await browser.newContext(
+        storageExists
+          ? {
             storageState: this.config.storagePath,
           }
-        : {},
-    );
+          : {},
+      );
+      // 降低一些自动化痕迹（不保证有效，但成本低）
+      await ctx.addInitScript(() => {
+        // @ts-ignore
+        Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+      });
 
-    // 降低一些自动化痕迹（不保证有效，但成本低）
-    await ctx.addInitScript(() => {
-      // @ts-ignore
-      Object.defineProperty(navigator, "webdriver", { get: () => undefined });
-    });
-
-    return { browser, ctx };
+      return { browser, ctx };
+    } catch (e: any) {
+      if (e.message?.includes("Executable doesn't exist") || e.message?.includes("looks like you haven't installed")) {
+        console.error("\n❌ 启动浏览器失败：未找到浏览器执行文件。");
+        console.error("请尝试运行以下命令进行安装：\n");
+        console.error("    npx redbook-mcp install\n");
+        console.error("或者指定本地 Chrome 路径：--chromePath <path>\n");
+      }
+      throw e;
+    }
   }
 
   /**
@@ -60,13 +69,22 @@ export class BrowserManager {
    */
   async openInteractiveLogin(): Promise<{ browser: Browser; ctx: BrowserContext; page: Page }> {
     await ensureDir(this.config.dataDir);
-    const browser = await chromium.launch({
-      headless: false,
-      executablePath: this.config.chromePath,
-    });
-    const ctx = await browser.newContext();
-    const page = await ctx.newPage();
-    return { browser, ctx, page };
+    try {
+      const browser = await chromium.launch({
+        headless: false,
+        executablePath: this.config.chromePath,
+      });
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      return { browser, ctx, page };
+    } catch (e: any) {
+      if (e.message?.includes("Executable doesn't exist") || e.message?.includes("looks like you haven't installed")) {
+        console.error("\n❌ 启动浏览器失败：未找到浏览器执行文件。");
+        console.error("请尝试运行以下命令进行安装：\n");
+        console.error("    npx redbook-mcp install\n");
+      }
+      throw e;
+    }
   }
 
   getStoragePath(): string {

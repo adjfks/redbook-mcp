@@ -1,5 +1,6 @@
 
 import { Command } from "commander";
+import { execSync } from "node:child_process";
 import path from "node:path";
 import { startMcpServer } from "./mcp/server.js";
 import { defaultDataDir, defaultStoragePath, type AppConfig } from "./lib/config.js";
@@ -51,6 +52,20 @@ program
     const config = getAppConfig(opts);
     await ensureDir(config.dataDir);
     await startMcpServer(config);
+  });
+
+program
+  .command("install")
+  .description("Install Playwright browsers (Chromium)")
+  .action(() => {
+    console.log("Installing Playwright Chromium...");
+    try {
+      execSync("npx playwright install chromium", { stdio: "inherit" });
+      console.log("\n✅ Browser installed successfully!");
+    } catch (e) {
+      console.error("\n❌ Installation failed. Please try running 'npx playwright install chromium' manually.");
+      process.exit(1);
+    }
   });
 
 program
