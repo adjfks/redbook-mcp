@@ -5,3 +5,5 @@ dist
 *.tmp
 get_specified_post_example.json
 example
+pnpm-lock.yaml
+package-lock.json

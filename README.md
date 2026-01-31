@@ -88,7 +88,33 @@
 
 进入 `Advanced settings` -> `Extensions` -> `Add custom extension`。自定义名称，使用类型 `STDIO`，并将 `command` 设置为 `npx redbook-mcp@latest`。点击 "Add Extension"。
 
+
 </details>
+
+## CLI 使用
+
+除了作为 MCP 服务器运行外，redbook-mcp 还支持命令行交互（CLI）模式。
+你可以在本地直接运行命令进行交互。
+
+### 常用命令
+
+#### 登录
+启动交互式登录流程（会打开浏览器窗口显示二维码）：
+```bash
+npx redbook-mcp login
+```
+
+#### 搜索
+搜索小红书内容：
+```bash
+npx redbook-mcp search "搜索关键词"
+```
+
+#### 获取详情
+获取指定笔记详情：
+```bash
+npx redbook-mcp detail <feed_id> --token <xsec_token>
+```
 
 ## 配置选项
 
