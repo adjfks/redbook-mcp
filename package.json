@@ -1,0 +1,59 @@
+{
+  "name": "redbook-mcp",
+  "version": "0.1.0",
+  "description": "A Model Context Protocol (MCP) server for Xiaohongshu (Little Red Book) automation using Playwright",
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "redbook-mcp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "debug": "cross-env XHS_HEADLESS=false npx @modelcontextprotocol/inspector",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "xiaohongshu",
+    "little-red-book",
+    "playwright",
+    "automation",
+    "social-media"
+  ],
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adjfks/xiaohongshu-mcp"
+  },
+  "homepage": "https://github.com/adjfks/xiaohongshu-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/adjfks/xiaohongshu-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "cross-env": "^10.1.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "playwright": "^1.58.0",
+    "zod": "^4.3.6"
+  }
+}
